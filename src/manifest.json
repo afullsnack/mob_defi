@@ -1,6 +1,6 @@
 {
-  "name": "DApp Starter",
-  "short_name": "DApp Starter",
+  "name": "MOB Finance",
+  "short_name": "MOB DeFi",
   "display": "standalone",
   "start_url": "./",
   "theme_color": "#002140",
