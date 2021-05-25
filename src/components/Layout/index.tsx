@@ -5,8 +5,9 @@ import { Link } from "react-router-dom";
 
 import { LABELS } from "../../constants";
 import { AppBar } from "../AppBar";
+import { SiderMenu } from "../SiderMenu";
 
-const { Header, Content } = Layout;
+const { Header, Content, Sider } = Layout;
 
 export const AppLayout = React.memo((props: any) => {
   return (
@@ -20,7 +21,13 @@ export const AppLayout = React.memo((props: any) => {
           </Link>
           <AppBar />
         </Header>
+        <Layout>
+        <Sider >
+          <SiderMenu />
+        </Sider>
         <Content style={{ padding: "0 50px" }}>{props.children}</Content>
+
+        </Layout>
       </Layout>
     </div>
   );
