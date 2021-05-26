@@ -22,11 +22,10 @@ export const AppLayout = React.memo((props: any) => {
           <AppBar />
         </Header>
         <Layout>
-        <Sider >
-          <SiderMenu />
-        </Sider>
-        <Content style={{ padding: "0 50px" }}>{props.children}</Content>
-
+          <Sider>
+            <SiderMenu />
+          </Sider>
+          <Content style={{ padding: "50px 50px" }}>{props.children}</Content>
         </Layout>
       </Layout>
     </div>

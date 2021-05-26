@@ -1,3 +1,6 @@
 export { HomeView } from "./home";
 export { FaucetView } from "./faucet";
-export {StakeView} from "./stake";
+export { SavingsView } from "./savings";
+export { FarmView } from "./farm";
+export { HarvestView } from "./harvest";
+export { MarketView } from "./market";
