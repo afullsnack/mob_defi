@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Col, Row, Button, Card, Avatar } from "antd";
+import { Col, Row, Card, Avatar } from "antd";
 import { RocketOutlined } from "@ant-design/icons";
 
 import "./style.less";
@@ -7,6 +7,11 @@ import "./style.less";
 
 export const SavingsView = () => {
 
+  useEffect(() => {
+
+    // handle component exit
+    return () => {};
+  });
 
     return (
         <Row gutter={[16, 16]} style={{margin: 0, padding: 0}} align="middle">

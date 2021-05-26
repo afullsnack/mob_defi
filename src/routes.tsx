@@ -20,7 +20,7 @@ export function Routes() {
                     <Switch>
                       <Route exact path="/" component={() => <HomeView />} />
                       <Route exact path="/faucet" children={<FaucetView />} />
-                      <Route exact path="/stake" children={<SavingsView />} />
+                      <Route exact path="/savings" children={<SavingsView />} />
                       <Route exact path="/farm" children={<FarmView />} />
                       <Route exact path="/harvest" children={<HarvestView />} />
                       <Route exact path="/market" children={<MarketView />} />
