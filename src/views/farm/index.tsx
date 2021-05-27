@@ -4,19 +4,13 @@ import { Col, Row, Button, Card } from "antd";
 
 export const FarmView = () => {
 
-
     return (
-        <Row gutter={[16, 16]} align={"middle"}>
-            <Col span={12}>
-                <Card title="Farm keys to unlock NFT's">
-                    <Card.Meta title={"Deposit Naira"} description={"Deposit naira and get sol to stake and start getting rewarded"} />
-                </Card>
-            </Col>
-          <Col span={12}>
-            <Card>
-              <Card.Meta title={"Deposit Naira"} description={"Deposit naira and get sol to stake and start getting rewarded"} />
-            </Card>
-          </Col>
-        </Row>
+      <Row gutter={[16, 16]} align={"middle"}>
+        <Col span={20}>
+          <Card title="NFT Farming">
+            <Card.Meta title="Coming Soon" description="This feature is being built to make sure everything works as expected for our users, for more details see our road map" />
+          </Card>
+        </Col>
+      </Row>
     )
 }

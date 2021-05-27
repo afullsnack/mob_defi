@@ -9,7 +9,7 @@ export const SiderMenu = (props: any) => {
     <Menu defaultSelectedKeys={['stake']} style={{height: "100%"}}>
       <MenuItem key="stake"><Link to={"/savings"}>Savings</Link></MenuItem>
       <MenuItem key="farm"><Link to={"/farm"}>NFT Farm's</Link></MenuItem>
-      <MenuItem key="harvest"><Link to={"/harvest"}>NFT Harvest</Link></MenuItem>
+      {/* <MenuItem key="harvest"><Link to={"/harvest"}>NFT Harvest</Link></MenuItem> */}
       <MenuItem key="market"><Link to={"/market"}>Market</Link></MenuItem>
     </Menu>
   );
