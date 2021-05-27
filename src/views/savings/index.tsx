@@ -1,5 +1,5 @@
 import React, { useEffect, useCallback, useState } from "react";
-import { Col, Row, Card, Avatar, Tabs, Radio, InputNumber } from "antd";
+import { Col, Row, Card, Avatar, Tabs, Radio, InputNumber, Button } from "antd";
 // import { RocketOutlined } from "@ant-design/icons";
 import { useQuery } from "../../hooks";
 
@@ -45,11 +45,11 @@ export const SavingsView = () => {
     return (
       <Row gutter={16} align="stretch">
         <Col span={24}>
-          <Tabs defaultActiveKey="individual" onChange={onTabChange}>
+          <Tabs defaultActiveKey={query.get("type")?.toString()} onChange={onTabChange}>
             <TabPane tab="Individual Savings" key="individual">
               <Row gutter={[16, 16]} align="top">
                 <Col span={8}>
-                  <Card title="Untitled Plan" extra={<EditFilled />} style={{textAlign: "left"}}>
+                  <Card title="Untitled Plan" extra={<EditFilled />} style={{textAlign: "left"}} actions={[<Button type="primary" size="large" block>Save</Button>]}>
                     <Card.Meta description="plan description is less that 120 chars" />
                     <br/>
                     <h4>Enter savings amount ($20 min equiv)</h4>
