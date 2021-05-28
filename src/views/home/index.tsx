@@ -1,5 +1,5 @@
-import { Col, Row, Card, Avatar } from "antd";
-import React, { useEffect } from "react";
+import { Col, Row, Card, Avatar, List } from "antd";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ConnectButton } from "../../components/ConnectButton";
 import { TokenIcon } from "../../components/TokenIcon";
@@ -20,6 +20,7 @@ export const HomeView = () => {
   const SRM = useUserBalance(SRM_ADDRESS);
   const SOL = useUserBalance(WRAPPED_SOL_MINT);
   const { balanceInUSD: totalBalanceInUSD } = useUserTotalBalance();
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
 
   useEffect(() => {
     const refreshTotal = () => {};
@@ -34,6 +35,8 @@ export const HomeView = () => {
       dispose();
     };
   }, [marketEmitter, midPriceInUSD, tokenMap]);
+
+  // console.log("midPrice", midPriceInUSD);
 
   return (
     // <Row gutter={[16, 16]} align="middle">
@@ -58,6 +61,15 @@ export const HomeView = () => {
     //   </Col>
     // </Row>
 
+    (isLoggedIn? <DashboardView /> : <Onboarding />)
+
+    
+  );
+};
+
+
+function Onboarding() {
+  return (
     <Row gutter={[16, 16]} style={{margin: 0, padding: 0}} align="middle">
       <Col span={24}>
           <h1 style={{fontSize: 21}}>To get started</h1>
@@ -85,5 +97,29 @@ export const HomeView = () => {
         </Link>
       </Col>
     </Row>
+  )
+}
+
+function DashboardView() {
+
+  return (
+    <Row gutter={16} style={{margin: 0, padding: 0, width: "100%"}}>
+      <Col span={12}>
+        <Card>
+          <h1>Total value you locked in</h1>
+          <h3>{0.00000}</h3>
+
+          <List>
+            
+          </List>
+        </Card>
+      </Col>
+      <Col span={12}>
+        <Card>
+          <h1>Total rewards you've gotten</h1>
+          <h3>{10.00000}</h3>
+        </Card>
+      </Col>
+    </Row>
   );
-};
+}
