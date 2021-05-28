@@ -59,6 +59,7 @@ interface ConnectionConfig {
   tokenMap: Map<string, TokenInfo>;
 }
 
+// define the connection context
 const ConnectionContext = React.createContext<ConnectionConfig>({
   endpoint: DEFAULT,
   setEndpoint: () => {},
@@ -71,6 +72,7 @@ const ConnectionContext = React.createContext<ConnectionConfig>({
   tokenMap: new Map<string, TokenInfo>(),
 });
 
+// define the connection Provider
 export function ConnectionProvider({ children = undefined as any }) {
   const [endpoint, setEndpoint] = useLocalStorageState(
     "connectionEndpts",
@@ -246,10 +248,14 @@ export const sendTransaction = async (
   transaction.recentBlockhash = (
     await connection.getRecentBlockhash("max")
   ).blockhash;
-  transaction.setSigners(
-    // fee payied by the wallet owner
+
+  //get signer buffer
+  // let arrBuffer = ;
+  let _signersBuffer = Buffer.from(signers.map((s) => s.publicKey));
+  transaction.addSignature(
+    // fee payed by the wallet owner
     wallet.publicKey,
-    ...signers.map((s) => s.publicKey)
+    _signersBuffer
   );
   if (signers.length > 0) {
     transaction.partialSign(...signers);
