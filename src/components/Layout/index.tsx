@@ -16,7 +16,8 @@ export const AppLayout = React.memo((props: any) => {
         <Header className="App-Bar">
           <Link to="/">
             <div className="app-title">
-              <h2>MOB DeFi</h2>
+              <div className="app-logo"></div>
+              <h2>MOB.Finance</h2>
             </div>
           </Link>
           <AppBar />

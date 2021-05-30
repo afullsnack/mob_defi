@@ -4,6 +4,7 @@ use solana_program::{
 
 solana_program::declare_id!("BpfProgram1111111111111111111111111111111111");
 
+// Programs entry point
 entrypoint!(process_instruction);
 fn process_instruction(
     program_id: &Pubkey,
@@ -19,6 +20,17 @@ fn process_instruction(
     Ok(())
 }
 
+/*
+
+
+
+Large space to push test down
+
+
+
+*/
+
+// test doesn't matter rn
 #[cfg(test)]
 mod test {
     use {

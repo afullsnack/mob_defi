@@ -101,23 +101,43 @@ function Onboarding() {
 }
 
 function DashboardView() {
-
+  const data = [
+    {
+      title: "Total made",
+    },
+    {
+      title: "Total collected",
+    },
+    {
+      title: "Total gotten",
+    },
+  ];
   return (
     <Row gutter={16} style={{margin: 0, padding: 0, width: "100%"}}>
       <Col span={12}>
-        <Card>
+        <Card hoverable>
           <h1>Total value you locked in</h1>
           <h3>{0.00000}</h3>
 
-          <List>
+          <List size="small" dataSource={data} itemLayout="horizontal" renderItem={item => (
+            <List.Item>
+              <List.Item.Meta title={item.title} />
+            </List.Item>
+          )}>
             
           </List>
         </Card>
       </Col>
       <Col span={12}>
-        <Card>
+        <Card hoverable>
           <h1>Total rewards you've gotten</h1>
           <h3>{10.00000}</h3>
+
+          <List size="small" dataSource={data} itemLayout="horizontal" renderItem={item => (
+            <List.Item>
+              <List.Item.Meta title={item.title} />
+            </List.Item>
+          )} />
         </Card>
       </Col>
     </Row>
