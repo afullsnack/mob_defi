@@ -1,5 +1,5 @@
 [package]
-name = "bpf-program-template"
+name = "smc-program"
 version = "0.1.0"
 edition = "2018"
 license = "WTFPL"
@@ -7,8 +7,11 @@ publish = false
 
 [dependencies]
 solana-program = "1.6.7"
+anchor-lang = "0.7.0"
 
 [features]
+no-entrypoint = []
+cpi = ["no-entrypoint"]
 test-bpf = []
 
 [dev-dependencies]
@@ -18,3 +21,9 @@ solana-sdk = "1.6.7"
 
 [lib]
 crate-type = ["cdylib", "lib"]
+name = "smc_0"
+
+[workspace]
+members = [
+  "./"
+]

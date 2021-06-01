@@ -1,5 +1,9 @@
 use solana_program::{
-    account_info::AccountInfo, entrypoint, entrypoint::ProgramResult, msg, pubkey::Pubkey,
+    account_info::{next_account_info, AccountInfo},
+    entrypoint,
+    entrypoint::ProgramResult,
+    msg,
+    pubkey::Pubkey,
 };
 
 solana_program::declare_id!("BpfProgram1111111111111111111111111111111111");
@@ -11,12 +15,15 @@ fn process_instruction(
     accounts: &[AccountInfo],
     instruction_data: &[u8],
 ) -> ProgramResult {
+    let accounts_iter = &mut accounts.iter();
+    let account = next_account_info(accounts_iter)?;
     msg!(
         "process_instruction: {}: {} accounts, data={:?}",
         program_id,
         accounts.len(),
         instruction_data
     );
+    msg!("Account info {}", account.owner);
     Ok(())
 }
 
