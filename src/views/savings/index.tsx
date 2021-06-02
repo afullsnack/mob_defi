@@ -5,6 +5,15 @@ import { useQuery } from "../../hooks";
 
 import { EditFilled } from "@ant-design/icons";
 
+import {
+  establishConnection,
+  establishPayer,
+  checkProgram,
+  sayHello,
+  reportGreetings,
+} from "../../actions/connectToProgram";
+const read = require('read-file');
+
 const { TabPane } = Tabs;
 
 // type LockTimeOptions = {
@@ -26,6 +35,15 @@ const _tokenRewardOptions = [
   { label: "RAY", value: "RAY", disabled: false },
 ]
 
+function cb(err: any, data: any) {
+  if (err) {
+    throw new Error("Something went wrong");
+  }
+
+  console.log("The raw data", data);
+  return data;
+}
+
 export const SavingsView = () => {
 
   const [lockTime, setLockTime] = useState(14);
@@ -35,6 +53,21 @@ export const SavingsView = () => {
   const onTabChange = useCallback((key) => console.log("Tab Key: ", key), []);
   const _lockTimeOptionsChange = useCallback((e) => setLockTime(e.target.value), []);
   const _tokenRewardOptionsChange = useCallback((e) => setTokenReward(e.target.value), []);
+
+  const callSolProgram = async () => {
+    // await establishConnection();
+    // await establishPayer();
+    // await checkProgram();
+    // await sayHello();
+    // const res = await reportGreetings();
+    const res = read('./sample.json', "utf8", function(err: any, buffer: any) {
+      if(err) throw new Error('An error occured here');
+      console.log("The files buffer data", buffer);
+      return buffer;
+    })
+    console.log(res);
+    // return res;
+  }
 
   useEffect(() => {
 
@@ -88,7 +121,11 @@ export const SavingsView = () => {
               </Row>
             </TabPane>
             <TabPane tab="Custom Savings" key="custom">
-              Content of Tab Pane 2
+              <Row gutter={16} style={{width: "100%"}}>
+                <Col span={24}>
+                  <Button size="large" type="primary" block onClick={() => callSolProgram()}>CALL SOL PROGRAM</Button>
+                </Col>
+              </Row>
             </TabPane>
             <TabPane tab="Public Savings" key="public">
               Content of Tab Pane 3

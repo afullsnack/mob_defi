@@ -1,12 +1,21 @@
+use borsh::{BorshDeserialize, BorshSerialize};
 use solana_program::{
     account_info::{next_account_info, AccountInfo},
     entrypoint,
     entrypoint::ProgramResult,
+    program_error::ProgramError,
     msg,
     pubkey::Pubkey,
 };
 
-solana_program::declare_id!("BpfProgram1111111111111111111111111111111111");
+/// Define the type of state stored in accounts
+#[derive(BorshSerialize, BorshDeserialize, Debug)]
+pub struct GreetingAccount {
+    /// number of greetings
+    pub counter: u32,
+    pub name: String,
+}
+// solana_program::declare_id!("BpfProgram1111111111111111111111111111111111");
 
 // Programs entry point
 entrypoint!(process_instruction);
@@ -23,7 +32,22 @@ fn process_instruction(
         accounts.len(),
         instruction_data
     );
-    msg!("Account info {}", account.owner);
+
+    if account.owner != program_id {
+        msg!("Greeted account does not have the correct program id");
+        return Err(ProgramError::IncorrectProgramId);
+    }
+
+    let mut greeting_account = GreetingAccount::try_from_slice(&account.data.borrow())?;
+    msg!("current counter {}", greeting_account.counter);
+    greeting_account.counter += 1;
+    greeting_account.serialize(&mut &mut account.data.borrow_mut()[..])?;
+    msg!(
+        "Greeted the account {} {} time(s)! With name {}",
+        account.owner,
+        greeting_account.counter,
+        greeting_account.name,
+    );
     Ok(())
 }
 
