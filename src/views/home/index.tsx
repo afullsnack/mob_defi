@@ -18,10 +18,12 @@ export const HomeView = () => {
   const { marketEmitter, midPriceInUSD } = useMarkets();
   const { tokenMap } = useConnectionConfig();
   const SRM_ADDRESS = 'SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt';
+  const TESTDF = 'CH2tbanGTw8qfPqVs2YUjM99RcLMsjggCoBkUuBVWtJK';
   const SRM = useUserBalance(SRM_ADDRESS);
   const SOL = useUserBalance(WRAPPED_SOL_MINT);
+  const TDF = useUserBalance(TESTDF);
   const { balanceInUSD: totalBalanceInUSD } = useUserTotalBalance();
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     const refreshTotal = () => {};
@@ -47,6 +49,7 @@ export const HomeView = () => {
     //     <h2 style={{ display: 'inline-flex', alignItems: 'center' }}>
     //       <TokenIcon mintAddress={SRM_ADDRESS} /> SRM: {SRM?.balance} ({formatUSD.format(SRM?.balanceInUSD)})
     //     </h2>
+    //     <h2>TDF: {TDF.balance}</h2>
     //   </Col>
 
     //   <Col span={12}>
@@ -74,29 +77,30 @@ function Onboarding() {
     <Row gutter={[16, 16]} style={{margin: 0, padding: 0}} align="middle">
       <Col span={24}>
           <h1 style={{fontSize: 21}}>To get started</h1>
+          <span>Connect your SOL wallet and </span>
           <span>choose your savings style</span>
       </Col>
-      <Col span={8}>
+      <Col sm={{span: 24}} lg={{span: 12}}>
         <Link to="/savings?type=individual">
           <Card hoverable title="Individual Savings" extra={<Avatar shape="circle" size="large" children={<RocketOutlined size={21} />} />} style={{textAlign: "left"}}>
             <Card.Meta description={"Deposit your naira to start your savings journey and get high APY returns on your locked in savings"} />
           </Card>
         </Link>
       </Col>
-      <Col span={8}>
+      <Col sm={{span: 24}} lg={{span: 12}}>
         <Link to="/savings?type=custom">
           <Card hoverable title="Custom Savings Pool" extra={<Avatar shape="circle" size="large" children={<RocketOutlined size={21} />} />} style={{textAlign: "left"}}>
             <Card.Meta description={"Create a custom group and add your friends and family to save, with a max amount set"} />
           </Card>
         </Link>
       </Col>
-      <Col span={8}>
+      {/* <Col span={8}>
         <Link to="/savings?type=public">
           <Card hoverable title="Public Savings Pool" extra={<Avatar shape="circle" size="large" children={<RocketOutlined size={21} />} />} style={{textAlign: "left"}}>
             <Card.Meta description={"Join public savings pool with any amount if you can't afford the minimum for and individual savings"} />
           </Card>
         </Link>
-      </Col>
+      </Col> */}
     </Row>
   )
 }

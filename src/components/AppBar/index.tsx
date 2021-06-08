@@ -6,12 +6,16 @@ import { SettingOutlined } from "@ant-design/icons";
 import { Settings } from "../Settings";
 import { LABELS } from "../../constants";
 import { ConnectButton } from "../ConnectButton";
+import { useLocalStorageState } from "../../utils/utils";
+import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 
 export const AppBar = (props: { left?: JSX.Element; right?: JSX.Element }) => {
   const { connected } = useWallet();
+  const [lockedValue, setLockedValue] = useLocalStorageState('lockedValue');
 
   const TopBar = (
     <div className="App-Bar-right">
+      <h4 style={{marginRight: 30}}>Your TVL: {lockedValue/LAMPORTS_PER_SOL} SOL</h4>
       {connected ? (
         <CurrentUserBadge />
       ) : (

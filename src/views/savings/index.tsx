@@ -1,26 +1,18 @@
 import React, { useEffect, useCallback, useState } from "react";
-import { Col, Row, Card, Avatar, Tabs, Radio, InputNumber, Button } from "antd";
-// import { RocketOutlined } from "@ant-design/icons";
+import { Col, Row, Card, Tabs, Radio, Input, Button, Popover, message, InputNumber } from "antd";
+
 import { useQuery } from "../../hooks";
 
-import { EditFilled } from "@ant-design/icons";
-
-import {
-  establishConnection,
-  establishPayer,
-  checkProgram,
-  sayHello,
-  reportGreetings,
-} from "../../actions/connectToProgram";
-const read = require('read-file');
+import { EditFilled, SaveFilled } from "@ant-design/icons";
+import { initStake, delegateStake, getDelegeationStatus } from "../../actions/stake";
+import { useConnection } from "../../contexts/connection";
+import { useWallet } from "../../contexts/wallet";
+import { useLocalStorageState } from "../../utils/utils";
+import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 
 const { TabPane } = Tabs;
 
-// type LockTimeOptions = {
-//   label: String,
-//   value: number,
-//   disabled: Boolean,
-// }
+
 
 const _lockTimeOptions = [
   { label: "14", value: 14, disabled: false },
@@ -28,47 +20,77 @@ const _lockTimeOptions = [
   { label: "60", value: 60, disabled: false },
   { label: "90", value: 90, disabled: false },
 ]
-const _tokenRewardOptions = [
-  { label: "MOBX", value: "MOBX", disabled: false },
-  { label: "USDT", value: "USDT", disabled: false },
-  { label: "SOL", value: "SOL", disabled: false },
-  { label: "RAY", value: "RAY", disabled: false },
-]
 
-function cb(err: any, data: any) {
-  if (err) {
-    throw new Error("Something went wrong");
-  }
 
-  console.log("The raw data", data);
-  return data;
-}
 
 export const SavingsView = () => {
 
+  const connection = useConnection();
+  const { wallet, publicKey } = useWallet();
+  const [keys, setKeys] = useLocalStorageState('stakePubkeys');
+  const [lockedValue, setLockedValue] = useLocalStorageState('lockedValue');
+  
+
+  const [loading, setLoading] = useState(false);
+  const [title, setTitle] = useState("New Savings");
+  const [desc, setDesc] = useState("Enter description");
+  const [amount, setAmount] = useState(0);
+  const [editMode, setEditMode] = useState(false);
   const [lockTime, setLockTime] = useState(14);
-  const [tokenReward, setTokenReward] = useState("MOBX");
+  const [tokenReward, setTokenReward] = useState("SOL");
+
 
   const query = useQuery();
   const onTabChange = useCallback((key) => console.log("Tab Key: ", key), []);
+  const _changeEditMode = useCallback(() => setEditMode(state => !state), []);
+  const _onTitleChange = useCallback((e) => setTitle(e.target.value), []);
+  const _onDescChange = useCallback((e) => setDesc(e.target.value), []);
+  const _onAmountChange = useCallback((e) => setAmount(e.target.value), []);
   const _lockTimeOptionsChange = useCallback((e) => setLockTime(e.target.value), []);
-  const _tokenRewardOptionsChange = useCallback((e) => setTokenReward(e.target.value), []);
+  const _save = useCallback(async () => {
+    if(!wallet?.publicKey) throw new Error("Wallet is not connected for stake");
 
-  const callSolProgram = async () => {
-    // await establishConnection();
-    // await establishPayer();
-    // await checkProgram();
-    // await sayHello();
-    // const res = await reportGreetings();
-    const res = read('./sample.json', "utf8", function(err: any, buffer: any) {
-      if(err) throw new Error('An error occured here');
-      console.log("The files buffer data", buffer);
-      return buffer;
-    })
-    console.log(res);
-    // return res;
-  }
+    console.log(amount);
+    console.log(title, desc, lockTime);
+    console.log(Number(amount) * LAMPORTS_PER_SOL);
 
+    if(Number(amount) === 0 || amount === null) return message.error("Fill in the required options");
+    let walletBallance = await connection.getAccountInfo(wallet.publicKey);
+    if(walletBallance != undefined && walletBallance.lamports < (Number(amount) * LAMPORTS_PER_SOL)) return message.error("Your wallet ballance is insufficient");
+
+    setLoading(true);
+
+    let date = new Date();
+    // initialize the save options
+    let lockDate = date.setDate(date.getDate() + lockTime);
+    console.log(lockDate);
+
+    const res = await initStake(
+      connection,
+      wallet,
+      { amount, lockDate }
+    );
+
+    console.log(keys);
+    keys === undefined? setKeys([res?.stakePubkey]) : setKeys([...keys, res?.stakePubkey]);
+    lockedValue === null? setLockedValue(res?.fund) : setLockedValue(lockedValue+res?.fund);
+
+
+
+    await delegateStake(connection, wallet);
+
+    let status = await getDelegeationStatus(connection, wallet);
+
+    if(status == "activating") {
+      setLoading(false)
+      message.success("Stake account created");
+    }
+
+  setLoading(false);
+  }, [amount, title, desc, lockTime, loading]);
+  // const _tokenRewardOptionsChange = useCallback((e) => setTokenReward(e.target.value), []);
+
+  
   useEffect(() => {
 
     // handle component exit
@@ -81,19 +103,23 @@ export const SavingsView = () => {
           <Tabs defaultActiveKey={query.get("type")?.toString()} onChange={onTabChange}>
             <TabPane tab="Individual Savings" key="individual">
               <Row gutter={[16, 16]} align="top">
-                <Col span={8}>
-                  <Card title="Untitled Plan" extra={<EditFilled />} style={{textAlign: "left"}} actions={[<Button type="primary" size="large" block>Save</Button>]}>
-                    <Card.Meta description="plan description is less that 120 chars" />
+                <Col sm={{span: 24}} md={{span: 12}} lg={{span: 8}}>
+                  <Card title={editMode? <Input type="text" style={{width: "60%"}} onChange={_onTitleChange} value={title} /> : title} extra={editMode? <SaveFilled onClick={_changeEditMode} /> : <EditFilled onClick={_changeEditMode} />} style={{textAlign: "left"}} actions={[<Button type="primary" size="large" block onClick={() => _save()} loading={loading}>Save</Button>]}>
+                    <Popover content="Description upto 120 chars">
+                      <Card.Meta description={editMode? <Input type="text" onChange={_onDescChange} value={desc} placeholder="120 Chars" /> : desc} />
+                    </Popover>
                     <br/>
                     <h4>Enter savings amount ($20 min equiv)</h4>
-                    <InputNumber
+                    <Input
+                      type="number"
                       size="middle"
-                      defaultValue={1000.75}
-                      maxLength={11}
-                      decimalSeparator="."
-                      precision={2}
-                      onChange={value => console.log(value)}
-                      formatter={value => `SOL ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                      // value={amount}
+                      prefix="SOL"
+                      // maxLength={11}
+                      // decimalSeparator="."
+                      // precision={2}
+                      onChange={_onAmountChange}
+                      // formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                       style={{width: "100%"}}
                     />
                     <br/><br/>
@@ -107,15 +133,17 @@ export const SavingsView = () => {
                       buttonStyle="solid"
                     />
                     <br/><br/>
-                    <h4>Choose token to be rewarded in</h4>
-                    <Radio.Group
+                    <Popover content={<span>Option to choose token reward coming soon.<br/>NOTE: commission fee: 5%</span>}>
+                      <h4>You will be rewarded in SOL</h4>
+                    </Popover>
+                    {/* <Radio.Group
                       size="middle"
                       options={_tokenRewardOptions}
                       onChange={_tokenRewardOptionsChange}
                       value={tokenReward}
                       optionType="button"
                       buttonStyle="solid"
-                    />
+                    /> */}
                   </Card>
                 </Col>
               </Row>
@@ -123,12 +151,10 @@ export const SavingsView = () => {
             <TabPane tab="Custom Savings" key="custom">
               <Row gutter={16} style={{width: "100%"}}>
                 <Col span={24}>
-                  <Button size="large" type="primary" block onClick={() => callSolProgram()}>CALL SOL PROGRAM</Button>
+                  <h1>Coming Soon</h1>
+                  <h4>Creating custom savings pool, set max amount and minimum amount and auto lock in when amount is reached</h4>
                 </Col>
               </Row>
-            </TabPane>
-            <TabPane tab="Public Savings" key="public">
-              Content of Tab Pane 3
             </TabPane>
           </Tabs>
         </Col>

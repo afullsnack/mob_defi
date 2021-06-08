@@ -22,7 +22,9 @@
     "bs58": "^4.0.1",
     "buffer-layout": "^1.2.0",
     "craco-less": "^1.17.0",
+    "epochutils": "^1.0.3",
     "eventemitter3": "^4.0.7",
+    "firebase": "^8.6.5",
     "fs-web": "^1.0.1",
     "jazzicon": "^1.5.0",
     "mz": "^2.7.0",
@@ -32,6 +34,7 @@
     "react-scripts": "3.4.3",
     "read-file": "^0.2.0",
     "typescript": "^4.0.0",
+    "unixtimejs": "^0.1.1",
     "yaml": "^1.10.2"
   },
   "scripts": {

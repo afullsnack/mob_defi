@@ -29,12 +29,12 @@ export const ENDPOINTS = [
   },
   {
     name: "testnet" as ENV,
-    endpoint: clusterApiUrl("testnet"),
+    endpoint: "https://api.testnet.solana.com/",
     chainID: ChainID.Testnet,
   },
   {
     name: "devnet" as ENV,
-    endpoint: clusterApiUrl("devnet"),
+    endpoint: "https://api.devnet.solana.com/",
     chainID: ChainID.Devnet,
   },
   {
@@ -234,7 +234,7 @@ const getErrorForTransaction = async (connection: Connection, txid: string) => {
 
 export const sendTransaction = async (
   connection: Connection,
-  wallet: WalletAdapter,
+  wallet: WalletAdapter | undefined,
   instructions: TransactionInstruction[],
   signers: Account[],
   awaitConfirmation = true
@@ -248,6 +248,8 @@ export const sendTransaction = async (
   transaction.recentBlockhash = (
     await connection.getRecentBlockhash("max")
   ).blockhash;
+
+  transaction.feePayer = wallet.publicKey;
 
   //get signer buffer
   // let arrBuffer = ;
