@@ -15,6 +15,7 @@ export const AppBar = (props: { left?: JSX.Element; right?: JSX.Element }) => {
 
   const TopBar = (
     <div className="App-Bar-right">
+      <h4 style={{marginRight: 30}}><a href="/mob_defi_Roadmap.pdf">Road Map </a></h4>
       <h4 style={{marginRight: 30}}>Your TVL: {lockedValue/LAMPORTS_PER_SOL} SOL</h4>
       {connected ? (
         <CurrentUserBadge />

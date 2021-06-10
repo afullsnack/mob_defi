@@ -1,5 +1,5 @@
 import React, { useEffect, useCallback, useState } from "react";
-import { Col, Row, Card, Tabs, Radio, Input, Button, Popover, message, InputNumber } from "antd";
+import { Col, Row, Card, Tabs, Radio, Input, Button, Popover, message, List, Avatar } from "antd";
 
 import { useQuery } from "../../hooks";
 
@@ -8,7 +8,7 @@ import { initStake, delegateStake, getDelegeationStatus } from "../../actions/st
 import { useConnection } from "../../contexts/connection";
 import { useWallet } from "../../contexts/wallet";
 import { useLocalStorageState } from "../../utils/utils";
-import { LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 
 const { TabPane } = Tabs;
 
@@ -21,6 +21,7 @@ const _lockTimeOptions = [
   { label: "90", value: 90, disabled: false },
 ]
 
+let list: any = [];
 
 
 export const SavingsView = () => {
@@ -29,7 +30,6 @@ export const SavingsView = () => {
   const { wallet, publicKey } = useWallet();
   const [keys, setKeys] = useLocalStorageState('stakePubkeys');
   const [lockedValue, setLockedValue] = useLocalStorageState('lockedValue');
-  
 
   const [loading, setLoading] = useState(false);
   const [title, setTitle] = useState("New Savings");
@@ -83,15 +83,18 @@ export const SavingsView = () => {
 
     if(status == "activating") {
       setLoading(false)
-      message.success("Stake account created");
+      message.success("Stake account created, Pending activation");
     }
 
-  setLoading(false);
+    setLoading(false);
   }, [amount, title, desc, lockTime, loading]);
   // const _tokenRewardOptionsChange = useCallback((e) => setTokenReward(e.target.value), []);
 
   
   useEffect(() => {
+
+    keys.map((key: string) => list.push(key));
+    console.log(list);
 
     // handle component exit
     return () => {};
@@ -109,7 +112,7 @@ export const SavingsView = () => {
                       <Card.Meta description={editMode? <Input type="text" onChange={_onDescChange} value={desc} placeholder="120 Chars" /> : desc} />
                     </Popover>
                     <br/>
-                    <h4>Enter savings amount ($20 min equiv)</h4>
+                    <h4>Enter an amount to stake</h4>
                     <Input
                       type="number"
                       size="middle"
@@ -134,7 +137,7 @@ export const SavingsView = () => {
                     />
                     <br/><br/>
                     <Popover content={<span>Option to choose token reward coming soon.<br/>NOTE: commission fee: 5%</span>}>
-                      <h4>You will be rewarded in SOL</h4>
+                      <h4>You will be rewarded in stSOL</h4>
                     </Popover>
                     {/* <Radio.Group
                       size="middle"
@@ -146,6 +149,44 @@ export const SavingsView = () => {
                     /> */}
                   </Card>
                 </Col>
+                {/* {
+                  keys.map((key: any) => {
+                    <Col sm={{span: 24}} md={{span: 12}} lg={{span: 8}}>
+                      <Card title={editMode? <Input type="text" style={{width: "60%"}} onChange={_onTitleChange} value={title} /> : title} extra={editMode? <SaveFilled onClick={_changeEditMode} /> : <EditFilled onClick={_changeEditMode} />} style={{textAlign: "left"}} actions={[<Button type="primary" size="large" block onClick={() => _save()} loading={loading}>Save</Button>]}>
+                        <Popover content="Description upto 120 chars">
+                          <Card.Meta description={editMode? <Input type="text" onChange={_onDescChange} value={desc} placeholder="120 Chars" /> : desc} />
+                        </Popover>
+                        <br/>
+                        <Input
+                          type="number"
+                          size="middle"
+                          // value={amount}
+                          prefix="SOL"
+                          // maxLength={11}
+                          // decimalSeparator="."
+                          // precision={2}
+                          onChange={_onAmountChange}
+                          // formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                          style={{width: "100%"}}
+                        />
+                        <br/><br/>
+                        <h4>Select lock in period(days)</h4>
+                        <Radio.Group
+                          size="middle"
+                          options={_lockTimeOptions}
+                          onChange={_lockTimeOptionsChange}
+                          value={lockTime}
+                          optionType="button"
+                          buttonStyle="solid"
+                        />
+                        <br/><br/>
+                        <Popover content={<span>Option to choose token reward coming soon.<br/>NOTE: commission fee: 5%</span>}>
+                          <h4>You will be rewarded in SOL</h4>
+                        </Popover>
+                      </Card>
+                    </Col>
+                  })
+                } */}
               </Row>
             </TabPane>
             <TabPane tab="Custom Savings" key="custom">
@@ -154,6 +195,30 @@ export const SavingsView = () => {
                   <h1>Coming Soon</h1>
                   <h4>Creating custom savings pool, set max amount and minimum amount and auto lock in when amount is reached</h4>
                 </Col>
+              </Row>
+            </TabPane>
+            <TabPane tab="Current Savings" key="current">
+              <Row gutter={16} style={{width: "100%"}}>
+                <Col span={6}>
+                </Col>
+                <Col span={12}>
+                  <List
+                    itemLayout="horizontal"
+                    dataSource={list}
+                    renderItem={async (item: string) => (
+                      <List.Item key={item}>
+                        <List.Item.Meta
+                          // avatar={<Avatar children={item} />}
+                          title={(await connection.getStakeActivation(new PublicKey(item))).state}
+                          description={<a href={`https://explorer.solana.com/address/${item}?cluster=devnet`}>{item}</a>}
+                        />
+                      </List.Item>
+                    )}
+                  />
+                </Col>
+                <Col span={6}>
+                </Col>
+
               </Row>
             </TabPane>
           </Tabs>
